@@ -111,7 +111,7 @@ pipeline {
                 echo 'Archiving build artifacts...'
 
                 archiveArtifacts(
-                        artifacts: '/target/*.jar',
+                        artifacts: 'target/*.jar',
                         fingerprint: true,
                         allowEmptyArchive: false
                 )
