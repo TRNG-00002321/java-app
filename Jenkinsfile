@@ -136,6 +136,25 @@ pipeline {
 
             }
         } // stage docker image
+
+        stage('Test Docker Image') {
+//            when {
+//                expression { params.BUILD_DOCKER == true }
+//            }
+            steps {
+                echo 'Testing Docker container...'
+
+                sh '''
+                    # Run the container
+                    echo "Running container for test..."
+                    docker run --rm ${DOCKER_IMAGE}:${DOCKER_TAG}
+                    
+                    echo ""
+                    echo "Container test completed successfully!"
+                '''
+            } // stage Test Docker Image
+        }
+
     } // stages end
 
 
