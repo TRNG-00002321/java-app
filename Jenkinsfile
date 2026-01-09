@@ -29,6 +29,24 @@ pipeline{
                 }
             }
 
+         stage('Checkout') {
+                    steps {
+                        echo 'Checking out source code...'
+
+                        // For demo with local files (already in workspace)
+                        // In real scenario, use: checkout scm
+                         git url: 'https://github.com/TRNG-00002321/java-app.git', branch: 'main'
+                        sh '''
+                            echo "Current directory contents:"
+                            ls -la
+                            echo ""
+                            echo "Java source files:"
+                            find . -name "*.java" -type f 2>/dev/null || true
+                        '''
+                    }
+                }
+
         }
+
         
 }
