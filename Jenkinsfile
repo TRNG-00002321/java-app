@@ -44,9 +44,25 @@ pipeline{
                             find . -name "*.java" -type f 2>/dev/null || true
                         '''
                     }
-                }
+                } // stage check out
 
-        }
+                 stage('Build') {
+                            steps {
+                                    echo 'Building application with Maven...'
+
+                                    sh '''
+                                        echo "Maven Wrapper version:"
+                                        chmod +x mvnw
+                                        ./mvnw --version
+                                        echo ""
+                                        echo "Compiling application..."
+                                        ./mvnw clean compile -B
+                                    '''
+                                }
+                        } // stage build
+
+
+        } // stages end
 
         
 }
