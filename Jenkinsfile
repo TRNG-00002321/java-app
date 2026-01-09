@@ -106,7 +106,36 @@ pipeline {
 
             }
         } // stage package
+        stage('Archive Artifacts') {
+            steps {
+                echo 'Archiving build artifacts...'
 
+                archiveArtifacts(
+                        artifacts: '/target/*.jar',
+                        fingerprint: true,
+                        allowEmptyArchive: false
+                )
+            }
+        } // stage archive
+
+        stage('Build Docker Image') {
+//            when {
+//                expression { params.BUILD_DOCKER == true }
+//            }
+            steps {
+                echo "Building Docker image: ${DOCKER_IMAGE}:${DOCKER_TAG}"
+
+                sh '''
+                        docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} .
+                        docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_IMAGE}:latest
+                        
+                        echo ""
+                        echo "Docker images built:"
+                        docker images | grep ${DOCKER_IMAGE} || true
+                    '''
+
+            }
+        } // stage docker image
     } // stages end
 
 
