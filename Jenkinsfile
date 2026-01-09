@@ -61,6 +61,36 @@ pipeline{
                                 }
                         } // stage build
 
+ stage('Test') {
+//             when {
+//                 expression { params.SKIP_TESTS == false }
+//             }
+            steps {
+                echo 'Running unit tests...'
+
+
+                    sh '''
+                        echo "Executing JUnit tests..."
+                        mvn test -B
+                    '''
+
+            }
+            post {
+                always {
+                    // Publish JUnit test results
+                    junit(
+                        testResults: 'target/surefire-reports/*.xml',
+                        allowEmptyResults: true
+                    )
+                }
+                success {
+                    echo '✅ All tests passed!'
+                }
+                failure {
+                    echo '❌ Some tests failed!'
+                }
+            }
+        } // stage test
 
         } // stages end
 
