@@ -74,7 +74,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.demo.Calculator</mainClass>
+                            <mainClass>com.revature.jen.Calculator</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
