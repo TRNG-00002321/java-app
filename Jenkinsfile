@@ -1,13 +1,13 @@
-pipeline{
+pipeline {
     agent any
 
-     // Environment variables for the pipeline
-        environment {
-            APP_NAME = 'calculator-app'
-            APP_VERSION = '1.0.0'
-            DOCKER_IMAGE = "${APP_NAME}"
-            DOCKER_TAG = "${BUILD_NUMBER}"
-        }
+    // Environment variables for the pipeline
+    environment {
+        APP_NAME = 'calculator-app'
+        APP_VERSION = '1.0.0'
+        DOCKER_IMAGE = "${APP_NAME}"
+        DOCKER_TAG = "${BUILD_NUMBER}"
+    }
 
 
     // Tool configuration
@@ -15,42 +15,42 @@ pipeline{
         maven 'Maven-3.9'  // Configure this in Jenkins Global Tool Configuration
     }
 
-     stages {
-            stage('Initialize') {
-                steps {
-                    echo '==========================================='
-                    echo '   Jenkins Pipeline - Calculator Demo'
-                    echo '==========================================='
-                    echo "Application: ${APP_NAME} v${APP_VERSION}"
-                    echo "Build Number: ${BUILD_NUMBER}"
-                    echo "Environment: ${params.ENVIRONMENT}"
-                    echo "Workspace: ${WORKSPACE}"
-                    echo '==========================================='
-                }
+    stages {
+        stage('Initialize') {
+            steps {
+                echo '==========================================='
+                echo '   Jenkins Pipeline - Calculator Demo'
+                echo '==========================================='
+                echo "Application: ${APP_NAME} v${APP_VERSION}"
+                echo "Build Number: ${BUILD_NUMBER}"
+                echo "Environment: ${params.ENVIRONMENT}"
+                echo "Workspace: ${WORKSPACE}"
+                echo '==========================================='
             }
+        }
 
-         stage('Checkout') {
-                    steps {
-                        echo 'Checking out source code...'
+        stage('Checkout') {
+            steps {
+                echo 'Checking out source code...'
 
-                        // For demo with local files (already in workspace)
-                        // In real scenario, use: checkout scm
-                         git url: 'https://github.com/TRNG-00002321/java-app.git', branch: 'main'
-                        sh '''
+                // For demo with local files (already in workspace)
+                // In real scenario, use: checkout scm
+                git url: 'https://github.com/TRNG-00002321/java-app.git', branch: 'main'
+                sh '''
                             echo "Current directory contents:"
                             ls -la
                             echo ""
                             echo "Java source files:"
                             find . -name "*.java" -type f 2>/dev/null || true
                         '''
-                    }
-                } // stage check out
+            }
+        } // stage check out
 
-                 stage('Build') {
-                            steps {
-                                    echo 'Building application with Maven...'
+        stage('Build') {
+            steps {
+                echo 'Building application with Maven...'
 
-                                    sh '''
+                sh '''
                                         echo "Maven Wrapper version:"
                                         chmod +x mvnw
                                         ./mvnw --version
@@ -58,10 +58,10 @@ pipeline{
                                         echo "Compiling application..."
                                         ./mvnw clean compile -B
                                     '''
-                                }
-                        } // stage build
+            }
+        } // stage build
 
- stage('Test') {
+        stage('Test') {
 //             when {
 //                 expression { params.SKIP_TESTS == false }
 //             }
@@ -69,7 +69,7 @@ pipeline{
                 echo 'Running unit tests...'
 
 
-                    sh '''
+                sh '''
                         echo "Executing JUnit tests..."
                         mvn test -B
                     '''
@@ -79,8 +79,8 @@ pipeline{
                 always {
                     // Publish JUnit test results
                     junit(
-                        testResults: 'target/surefire-reports/*.xml',
-                        allowEmptyResults: true
+                            testResults: 'target/surefire-reports/*.xml',
+                            allowEmptyResults: true
                     )
                 }
                 success {
@@ -92,7 +92,22 @@ pipeline{
             }
         } // stage test
 
-        } // stages end
+        stage('Package') {
+            steps {
+                echo 'Packaging application...'
 
-        
+                    sh '''
+                        echo "Creating JAR package..."
+                        mvn package -DskipTests -B
+                        echo ""
+                        echo "Build artifacts:"
+                        ls -la target/*.jar
+                    '''
+
+            }
+        } // stage package
+
+    } // stages end
+
+
 }
